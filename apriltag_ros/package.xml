@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>apriltag_ros</name>
+  <version>2.1.0</version>
+  <description>AprilTag detection node</description>
+  <maintainer email="annhunter201@gmail.com">H-HChen</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>eigen</depend>
+  <depend>opencv</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_msgs</depend>
+  <depend>apriltag</depend>
+  <!--
+  <depend>apriltag_msgs</depend>
+  -->
+  <depend>image_transport</depend>
+  <depend>cv_bridge</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
