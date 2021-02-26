@@ -175,8 +175,8 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
 
         std::vector<cv::Point3d > standaloneTagObjectPoints;
         std::vector<cv::Point2d > standaloneTagImagePoints;
-        double tag_detection_size = (tag_sizes.count(det->id) ? tag_sizes.at(det->id) : tag_edge_size)/2;
-        addObjectPoints(tag_detection_size, cv::Matx44d::eye(), standaloneTagObjectPoints);
+        double tag_half_size = (tag_sizes.count(det->id) ? tag_sizes.at(det->id) : tag_edge_size)/2;
+        addObjectPoints(tag_half_size, cv::Matx44d::eye(), standaloneTagObjectPoints);
         addImagePoints(det, standaloneTagImagePoints);
         Eigen::Matrix4d transform = getRelativeTransform(standaloneTagObjectPoints,
                                                         standaloneTagImagePoints,
@@ -198,7 +198,7 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
         tag_detection.pose.pose.pose.position.z = transform(2, 3);
         tag_detection.pose.pose.pose.orientation = tag_pose.transform.rotation;
         tag_detection.id = det->id;
-        tag_detection.size = tag_detection_size;
+        tag_detection.size = tag_half_size*2;
         tag_detection_array.detections.push_back(tag_detection);
     }
     pub_detections->publish(tag_detection_array);
