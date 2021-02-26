@@ -15,9 +15,7 @@
   <depend>sensor_msgs</depend>
   <depend>tf2_msgs</depend>
   <depend>apriltag</depend>
-  <!--
   <depend>apriltag_msgs</depend>
-  -->
   <depend>image_transport</depend>
   <depend>cv_bridge</depend>
 

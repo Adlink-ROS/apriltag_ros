@@ -21,8 +21,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
-//#include <apriltag_msgs/msg/april_tag_detection_array.hpp>
-//#include <apriltag_msgs/msg/april_tag_detection.hpp>
+#include <apriltag_msgs/msg/april_tag_detection_array.hpp>
+#include <apriltag_msgs/msg/april_tag_detection.hpp>
 
 
 class AprilTagNode : public rclcpp::Node {
@@ -51,7 +51,7 @@ private:
     const static std::map<std::string, void (*)(apriltag_family_t*)> tag_destroy;
 
     image_transport::CameraSubscriber sub_cam;
-    //const rclcpp::Publisher<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr pub_detections;
+    const rclcpp::Publisher<apriltag_msgs::msg::AprilTagDetectionArray>::SharedPtr pub_detections;
 
     void onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_img, 
                 const sensor_msgs::msg::CameraInfo::ConstSharedPtr& msg_ci);

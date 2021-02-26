@@ -49,8 +49,8 @@ AprilTagNode::AprilTagNode(rclcpp::NodeOptions options)
     z_up(declare_parameter<bool>("z_up", true)),
     
     // topics
-    sub_cam(image_transport::create_camera_subscription(this, "image", std::bind(&AprilTagNode::onCamera, this, std::placeholders::_1, std::placeholders::_2), declare_parameter<std::string>("image_transport", "raw"), rmw_qos_profile_sensor_data))
-    //pub_detections(create_publisher<apriltag_msgs::msg::AprilTagDetectionArray>("detections", rclcpp::QoS(10)))
+    sub_cam(image_transport::create_camera_subscription(this, "image", std::bind(&AprilTagNode::onCamera, this, std::placeholders::_1, std::placeholders::_2), declare_parameter<std::string>("image_transport", "raw"), rmw_qos_profile_sensor_data)),
+    pub_detections(create_publisher<apriltag_msgs::msg::AprilTagDetectionArray>("apriltag_detections", rclcpp::QoS(10)))
 {
     td->quad_decimate = declare_parameter<float>("decimate", 1.0);
     td->quad_sigma =    declare_parameter<float>("blur", 0.0);
@@ -161,9 +161,9 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
     if (remove_duplicates_){
         removeDuplicates(detections);
     }
-    //AprilTagDetectionArray tag_detection_array;
+    apriltag_msgs::msg::AprilTagDetectionArray tag_detection_array;
     std::vector<std::string > detection_names;
-    //tag_detection_array.header = msg_img->header;
+    tag_detection_array.header = msg_img->header;
     for (int i = 0; i < zarray_size(detections); i++) {
         apriltag_detection_t* det;
         zarray_get(detections, i, &det);
@@ -175,7 +175,8 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
 
         std::vector<cv::Point3d > standaloneTagObjectPoints;
         std::vector<cv::Point2d > standaloneTagImagePoints;
-        addObjectPoints((tag_sizes.count(det->id) ? tag_sizes.at(det->id) : tag_edge_size)/2, cv::Matx44d::eye(), standaloneTagObjectPoints);
+        double tag_detection_size = (tag_sizes.count(det->id) ? tag_sizes.at(det->id) : tag_edge_size)/2;
+        addObjectPoints(tag_detection_size, cv::Matx44d::eye(), standaloneTagObjectPoints);
         addImagePoints(det, standaloneTagImagePoints);
         Eigen::Matrix4d transform = getRelativeTransform(standaloneTagObjectPoints,
                                                         standaloneTagImagePoints,
@@ -189,8 +190,18 @@ void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_i
         // set child frame name by generic tag name or configured tag name
         tag_pose.child_frame_id = tag_frames.count(det->id) ? tag_frames.at(det->id) : std::string(det->family->name)+":"+std::to_string(det->id);
         tf_broadcaster_->sendTransform(tag_pose);
+
+        //Publish Tag detection msg
+        apriltag_msgs::msg::AprilTagDetection tag_detection;
+        tag_detection.pose.pose.pose.position.x = transform(0, 3);
+        tag_detection.pose.pose.pose.position.y = transform(1, 3);
+        tag_detection.pose.pose.pose.position.z = transform(2, 3);
+        tag_detection.pose.pose.pose.orientation = tag_pose.transform.rotation;
+        tag_detection.id = det->id;
+        tag_detection.size = tag_detection_size;
+        tag_detection_array.detections.push_back(tag_detection);
     }
-    //pub_detections->publish(msg_detections);
+    pub_detections->publish(tag_detection_array);
     apriltag_detections_destroy(detections);
 }
 void AprilTagNode::addObjectPoints (

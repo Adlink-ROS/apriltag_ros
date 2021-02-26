@@ -13,7 +13,7 @@ find_package(image_transport REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
-#find_package(apriltag_msgs REQUIRED)
+find_package(apriltag_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
 find_package(OpenCV REQUIRED)
@@ -26,7 +26,7 @@ add_executable(tag_detector src/AprilTagNode.cpp)
 
 add_library(AprilTagNode SHARED src/AprilTagNode.cpp)
 
-set(DEPENDENCIES "rclcpp" "rclcpp_components" "geometry_msgs" 
+set(DEPENDENCIES "rclcpp" "rclcpp_components" "geometry_msgs" "apriltag_msgs"
     "image_geometry" "sensor_msgs"  "tf2_msgs" "image_transport" "cv_bridge" "tf2_ros")
 
 ament_target_dependencies(AprilTagNode ${DEPENDENCIES})
