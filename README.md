@@ -8,7 +8,7 @@ You can specify number in tag family to filter detection of output, and set fram
 
 ## Quickstart
 
-Starting with a working ROS installation (Kinetic and Melodic are supported):
+Starting with a working ROS installation:
 
 ```
 mkdir -p ~/apriltag_ros2_ws/src                # Make a new workspace 
