@@ -47,9 +47,9 @@ AprilTagNode::AprilTagNode(rclcpp::NodeOptions options)
     tag_edge_size(declare_parameter<double>("size", 2.0)),
     max_hamming(declare_parameter<int>("max_hamming", 0)),
     z_up(declare_parameter<bool>("z_up", true)),
-    
+
     // topics
-    sub_cam(image_transport::create_camera_subscription(this, "image", std::bind(&AprilTagNode::onCamera, this, std::placeholders::_1, std::placeholders::_2), declare_parameter<std::string>("image_transport", "raw"), rmw_qos_profile_sensor_data)),
+    sub_cam(image_transport::create_camera_subscription(this, "image", std::bind(&AprilTagNode::onCamera, this, std::placeholders::_1, std::placeholders::_2), declare_parameter<std::string>("image_transport", "raw"), rmw_qos_profile_default)),
     pub_detections(create_publisher<apriltag_msgs::msg::AprilTagDetectionArray>("apriltag_detections", rclcpp::QoS(10)))
 {
     td->quad_decimate = declare_parameter<float>("decimate", 1.0);
@@ -61,7 +61,7 @@ AprilTagNode::AprilTagNode(rclcpp::NodeOptions options)
     // get tag names, IDs and sizes
     const auto ids = declare_parameter<std::vector<int64_t>>("tag_ids", {});
     const auto frames = declare_parameter<std::vector<std::string>>("tag_frames", {});
-    
+
     if(!frames.empty()) {
         if(ids.size()!=frames.size()) {
             throw std::runtime_error("Number of tag ids ("+std::to_string(ids.size())+") and frames ("+std::to_string(frames.size())+") mismatch!");
@@ -142,7 +142,7 @@ void AprilTagNode::removeDuplicates(zarray_t* detections_ ){
 void AprilTagNode::onCamera(const sensor_msgs::msg::Image::ConstSharedPtr& msg_img, const sensor_msgs::msg::CameraInfo::ConstSharedPtr& msg_ci) {
     // convert to 8bit monochrome image
     const cv::Mat img_uint8 = cv_bridge::toCvShare(msg_img, "mono8")->image;
-    
+
     image_u8_t im = {
         .width = img_uint8.cols,
         .height = img_uint8.rows,
