@@ -15,26 +15,36 @@ find_package(cv_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(apriltag_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
-INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
 find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED)
 find_package(apriltag REQUIRED)
 
-include_directories(include)
+include_directories(include ${EIGEN3_INCLUDE_DIR})
 
 add_executable(tag_detector src/AprilTagNode.cpp)
 
 add_library(AprilTagNode SHARED src/AprilTagNode.cpp)
 
-set(DEPENDENCIES "rclcpp" "rclcpp_components" "geometry_msgs" "apriltag_msgs"
-    "image_geometry" "sensor_msgs"  "tf2_msgs" "image_transport" "cv_bridge" "tf2_ros")
+set(DEPENDENCIES
+    "rclcpp"
+    "rclcpp_components"
+    "sensor_msgs"
+    "tf2_msgs"
+    "tf2_ros"
+    "image_transport"
+    "image_geometry"
+    "cv_bridge"
+    "geometry_msgs"
+    "apriltag_msgs"
+    "Eigen3"
+    "apriltag"
+)
 
 ament_target_dependencies(AprilTagNode ${DEPENDENCIES})
 ament_target_dependencies(tag_detector ${DEPENDENCIES})
 
 target_link_libraries(AprilTagNode apriltag::apriltag)
 target_link_libraries(tag_detector apriltag::apriltag)
-
 
 rclcpp_components_register_nodes(AprilTagNode "AprilTagNode")
 
@@ -57,4 +67,10 @@ install(DIRECTORY cfg/ DESTINATION share/${PROJECT_NAME}/cfg)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_export_dependencies(${DEPENDENCIES})
 ament_package()
