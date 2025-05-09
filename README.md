@@ -14,7 +14,7 @@ Starting with a working ROS installation:
 mkdir -p ~/apriltag_ros2_ws/src                # Make a new workspace 
 cd ~/apriltag_ros2_ws/src                      # Navigate to the source space
 git clone https://github.com/AprilRobotics/apriltag.git                  # Clone Apriltag library
-git clone https://github.com/Adlink-ROS/apriltag_ros.git -b foxy-devel   # Clone Apriltag ROS wrapper
+git clone https://github.com/Adlink-ROS/apriltag_ros.git -b jazzy-devel   # Clone Apriltag ROS wrapper
 cd ..               
 rosdep install --from-paths src --ignore-src -r -y  # Install any missing packages
 colcon build --symlink-install                      # Build all packages in the workspace
